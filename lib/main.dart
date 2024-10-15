@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       navigatorKey: navigatorKey, // context가 없는 곳에서 context를 사용할 수 있는 방법
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      home: SplashPage(),
       routes: {
         "/login": (context) => const LoginPage(),
         "/join": (context) => const JoinPage(),

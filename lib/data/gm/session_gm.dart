@@ -54,15 +54,25 @@ class SessionGM {
 
   Future<void> autoLogin() async {
     // 1. 시큐어 스토리지에서 accessToken 꺼내기
-    // 2. api 호출
-    // 3. 세션 값 갱신
-    // 4. 정상이면 /post/list 로 이동
-    Future.delayed(
-      Duration(seconds: 3),
-      () {
-        Navigator.popAndPushNamed(mContext, "/post/list");
-      },
-    );
+    String? accessToken = await secureStorage.read(key: "accessToken");
+    Logger().d("accessToken? , ${accessToken}");
+    if (accessToken == null) {
+      Navigator.popAndPushNamed(mContext, '/login');
+    } else {
+      // 2. api 호출
+      Map<String, dynamic> body = await UserRepository().autoLogin(accessToken);
+      // 3. 세션 값 갱신
+      this.id = body["response"]["id"];
+      this.username = body["response"]["username"];
+      this.accessToken = accessToken;
+      this.isLogin = true;
+
+      await secureStorage.write(key: "accessToken", value: accessToken);
+      // (3) dio 에 토큰 세팅
+      dio.options.headers["Autorization"] = accessToken;
+      // (4) 화면 이동
+      Navigator.pushNamed(mContext, "/post/list");
+    }
   }
 }
 
